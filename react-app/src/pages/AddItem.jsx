@@ -25,6 +25,11 @@ function AddItem() {
     }, [navigate]);
 
     const handleApi = () => {
+        if (!title || !description || !price || !deposit || !category || !loc || !image) {
+            alert('Please fill all the required fields including the image.');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('location', loc);
         formData.append('title', title)
@@ -34,7 +39,7 @@ function AddItem() {
         formData.append('category', category)
         formData.append('image', image)
 
-        const url =  API_URL + "/items";
+        const url =  API_URL + "/items/create";
         const token = localStorage.getItem('token');
         axios.post(url, formData, { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => {
@@ -44,6 +49,7 @@ function AddItem() {
                 }
             })
         .catch((err) => {
+            console.log(err.response?.data || err.message);
             const errorMsg = err.response?.data?.message || 'Server Err';
             alert(errorMsg);
         })

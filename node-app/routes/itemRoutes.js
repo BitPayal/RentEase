@@ -15,7 +15,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.post('/', authMiddleware, upload.single('image'), itemController.addItem);
+router.post('/create', authMiddleware, upload.single('image'), itemController.createItem);
+
 router.get('/', itemController.getItems);
 router.get('/my-items', authMiddleware, itemController.getMyItems);
 router.get('/search', itemController.searchItems);

@@ -2,7 +2,7 @@ const Item = require('../models/Item');
 const ApprovalToken = require('../models/ApprovalToken');
 const applyDynamicPricing = require('../utils/dynamicPricing');
 
-exports.addItem = async (req, res) => {
+exports.createItem = async (req, res) => {
     try {
         const title = req.body.title || req.body.pname;
         const description = req.body.description || req.body.pdesc;
@@ -26,9 +26,9 @@ exports.addItem = async (req, res) => {
         });
         await product.save();
         res.send({ message: 'saved success.' });
-    } catch (err) {
-        console.error("AddItem Error:", err);
-        res.status(500).send({ message: err.message || 'server err' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: error.message || 'server err' });
     }
 };
 
