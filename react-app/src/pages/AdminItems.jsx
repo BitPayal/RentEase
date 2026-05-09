@@ -88,9 +88,10 @@ function AdminItems() {
                 setSelectedItemId(null);
                 fetchPendingItems();
             })
-            .catch(err => {
-                console.log(err.response?.data || err.message);
-                toast.error(err.response?.data?.message || "Failed to suggest price");
+            .catch(error => {
+                console.log(error.response?.data);
+                console.log(error.message);
+                toast.error(error.response?.data?.message || "Failed to suggest price");
             })
             .finally(() => setIsSubmitting(false));
     };

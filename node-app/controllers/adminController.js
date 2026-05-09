@@ -214,22 +214,24 @@ exports.refundEscrow = async (req, res) => {
     }
 };
 
-const sendPriceChangeEmail = require('../utils/email');
+const { sendPriceChangeEmail } = require('../utils/email');
 const crypto = require('crypto');
 const ApprovalToken = require('../models/ApprovalToken');
 
 exports.suggestPrice = async (req, res) => {
     try {
+        console.log(req.params.id);
+        console.log(req.body);
         const { id } = req.params;
         const { suggestedPrice } = req.body;
         
-        const item = await Item.findById(id).populate('ownerId', 'username email');
-        if (!item) return res.status(404).send({ message: 'Item not found' });
+        const item = await Item.findByIdAndUpdate(
+            id, 
+            { suggestedPrice, priceSuggestionStatus: 'pending', status: 'price_pending' },
+            { new: true }
+        ).populate('ownerId', 'username email');
         
-        item.suggestedPrice = suggestedPrice;
-        item.priceSuggestionStatus = 'pending';
-        item.status = 'price_pending';
-        await item.save();
+        if (!item) return res.status(404).json({ message: 'Item not found' });
 
         if (item.ownerId && item.ownerId.email) {
             // Generate a secure token
