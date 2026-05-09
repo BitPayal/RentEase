@@ -227,6 +227,7 @@ exports.suggestPrice = async (req, res) => {
         if (!item) return res.status(404).send({ message: 'Item not found' });
         
         item.suggestedPrice = suggestedPrice;
+        item.priceSuggestionStatus = 'pending';
         item.status = 'price_pending';
         await item.save();
 
@@ -250,9 +251,12 @@ exports.suggestPrice = async (req, res) => {
             await sendPriceChangeEmail(item.ownerId.email, item.title, item.originalPrice, suggestedPrice, tokenStr);
         }
 
-        res.send({ message: 'Price suggested successfully', item });
-    } catch(err) { 
-        console.error("Suggest Price Error:", err);
-        res.status(500).send({ message: 'Server error' }); 
+        res.status(200).json({
+          success: true,
+          message: "Price suggestion sent successfully"
+        });
+    } catch(error) { 
+        console.error(error);
+        res.status(500).json({ message: 'Server error' }); 
     }
 };

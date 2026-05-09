@@ -3,12 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 import { getAdminPendingItems, updateAdminItemStatus, suggestAdminItemPrice, updateAdminItem } from "../services/api";
 import API_URL from "../constants";
+import toast from 'react-hot-toast';
 
 function AdminItems() {
     const [items, setItems] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [suggestedPrice, setSuggestedPrice] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     
     // Edit Modal State
     const [showEditModal, setShowEditModal] = useState(false);
@@ -74,18 +76,23 @@ function AdminItems() {
 
     const handleSuggestPrice = () => {
         if (!suggestedPrice || isNaN(suggestedPrice)) {
-            alert("Please enter a valid price");
+            toast.error("Please enter a valid price");
             return;
         }
+        setIsSubmitting(true);
         suggestAdminItemPrice(selectedItemId, suggestedPrice, localStorage.getItem('token'))
             .then(() => {
-                alert("Price suggested and email sent!");
+                toast.success("Price suggested and email sent!");
                 setShowModal(false);
                 setSuggestedPrice("");
                 setSelectedItemId(null);
                 fetchPendingItems();
             })
-            .catch(err => alert("Failed to suggest price"));
+            .catch(err => {
+                console.log(err.response?.data || err.message);
+                toast.error(err.response?.data?.message || "Failed to suggest price");
+            })
+            .finally(() => setIsSubmitting(false));
     };
 
     return (
@@ -197,8 +204,10 @@ function AdminItems() {
                                 />
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                                <button type="button" className="btn btn-primary" onClick={handleSuggestPrice}>Send Suggestion</button>
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={isSubmitting}>Cancel</button>
+                                <button type="button" className="btn btn-primary" onClick={handleSuggestPrice} disabled={isSubmitting}>
+                                    {isSubmitting ? "Sending..." : "Send Suggestion"}
+                                </button>
                             </div>
                         </div>
                     </div>

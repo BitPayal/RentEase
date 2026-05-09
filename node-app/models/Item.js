@@ -12,7 +12,8 @@ const itemSchema = new mongoose.Schema({
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     deposit: Number,
     location: String,
-    status: { type: String, enum: ['pending', 'price_pending', 'final_review', 'approved', 'rejected'], default: 'pending' }
+    status: { type: String, enum: ['pending', 'price_pending', 'final_review', 'approved', 'rejected'], default: 'pending' },
+    priceSuggestionStatus: { type: String, enum: ['pending', 'accepted', 'rejected'] }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Item', itemSchema);

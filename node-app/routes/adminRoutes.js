@@ -34,7 +34,7 @@ router.delete('/users/:id', adminController.deleteUser);
 router.patch('/users/:id/status', adminController.updateUserStatus);
 router.get('/items/pending', adminController.getPendingItems);
 router.post('/items/:id/status', adminController.updateItemStatus);
-router.post('/items/:id/suggest-price', adminController.suggestPrice);
+router.patch('/items/:id/suggest-price', adminController.suggestPrice);
 router.put('/items/:id', upload.single('image'), adminController.updateAdminItem);
 
 // Verifications

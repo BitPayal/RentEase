@@ -98,7 +98,7 @@ export const updateVerificationStatus = (id, status, token) => API.post(`/admin/
 export const getAdminPendingItems = (token) => API.get("/admin/items/pending", { headers: { Authorization: token } });
 export const updateAdminItem = (id, formData, token) => API.put(`/admin/items/${id}`, formData, { headers: { Authorization: token } });
 export const updateAdminItemStatus = (id, status, token) => API.post(`/admin/items/${id}/status`, { status }, { headers: { Authorization: token } });
-export const suggestAdminItemPrice = (id, suggestedPrice, token) => API.post(`/admin/items/${id}/suggest-price`, { suggestedPrice }, { headers: { Authorization: token } });
+export const suggestAdminItemPrice = (id, suggestedPrice, token) => API.patch(`/admin/items/${id}/suggest-price`, { suggestedPrice }, { headers: { Authorization: `Bearer ${token}` } });
 export const getAdminBookings = (token) => API.get("/admin/bookings", { headers: { Authorization: token } });
 export const cancelAdminBooking = (id, token) => API.post(`/admin/bookings/${id}/cancel`, {}, { headers: { Authorization: token } });
 export const releaseAdminEscrow = (id, token) => API.post(`/admin/bookings/${id}/release`, {}, { headers: { Authorization: token } });
