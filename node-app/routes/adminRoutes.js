@@ -30,6 +30,8 @@ router.use(isAdmin);
 router.get('/stats', adminController.getStats);
 router.get('/users', adminController.getUsers);
 router.post('/users/:id/ban', adminController.banUser);
+router.delete('/users/:id', adminController.deleteUser);
+router.patch('/users/:id/status', adminController.updateUserStatus);
 router.get('/items/pending', adminController.getPendingItems);
 router.post('/items/:id/status', adminController.updateItemStatus);
 router.post('/items/:id/suggest-price', adminController.suggestPrice);

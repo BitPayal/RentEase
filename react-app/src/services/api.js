@@ -17,8 +17,8 @@ API.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          // Attempt token refresh
-          const res = await axios.post('http://localhost:4000/api/auth/refresh', { refreshToken });
+          // Attempt token refresh without triggering interceptors recursively
+          const res = await axios.create().post('http://localhost:4000/api/auth/refresh', { refreshToken });
           if (res.data && res.data.token) {
             localStorage.setItem('token', res.data.token);
             window.dispatchEvent(new Event('storage'));
@@ -82,20 +82,21 @@ export const getMessages = (productId, chatUserId, token) => API.get(`/chat/${pr
 // === Admin APIs ===
 export const getAdminStats = (token) => API.get("/admin/stats", { headers: { Authorization: token } });
 export const getAdminUsers = (token) => API.get("/admin/users", { headers: { Authorization: token } });
-export const banAdminUser = (id, token) => API.post(`/admin/users/${id}/ban`, {}, { headers: { Authorization: token } });
+export const deleteAdminUser = (id, token) => API.delete(`/admin/users/${id}`, { headers: { Authorization: token } });
+export const updateAdminUserStatus = (id, status, token) => API.patch(`/admin/users/${id}/status`, { status }, { headers: { Authorization: token } });
 
 // Verifications
 export const sendEmailOTP = (token) => API.post("/auth/send-email-otp", {}, { headers: { Authorization: token } });
 export const verifyEmailOTP = (otp, token) => API.post("/auth/verify-email-otp", { otp }, { headers: { Authorization: token } });
 export const sendPhoneOTP = (token) => API.post("/auth/send-phone-otp", {}, { headers: { Authorization: token } });
 export const verifyPhoneOTP = (otp, token) => API.post("/auth/verify-phone-otp", { otp }, { headers: { Authorization: token } });
-export const submitIdProof = (formData, token) => API.post("/auth/submit-id", formData, { headers: { Authorization: token, 'Content-Type': 'multipart/form-data' } });
+export const submitIdProof = (formData, token) => API.post("/auth/submit-id", formData, { headers: { Authorization: token } });
 
 // Admin 
 export const getAdminPendingVerifications = (token) => API.get("/admin/verifications/pending", { headers: { Authorization: token } });
 export const updateVerificationStatus = (id, status, token) => API.post(`/admin/verifications/${id}/status`, { status }, { headers: { Authorization: token } });
 export const getAdminPendingItems = (token) => API.get("/admin/items/pending", { headers: { Authorization: token } });
-export const updateAdminItem = (id, formData, token) => API.put(`/admin/items/${id}`, formData, { headers: { Authorization: token, 'Content-Type': 'multipart/form-data' } });
+export const updateAdminItem = (id, formData, token) => API.put(`/admin/items/${id}`, formData, { headers: { Authorization: token } });
 export const updateAdminItemStatus = (id, status, token) => API.post(`/admin/items/${id}/status`, { status }, { headers: { Authorization: token } });
 export const suggestAdminItemPrice = (id, suggestedPrice, token) => API.post(`/admin/items/${id}/suggest-price`, { suggestedPrice }, { headers: { Authorization: token } });
 export const getAdminBookings = (token) => API.get("/admin/bookings", { headers: { Authorization: token } });

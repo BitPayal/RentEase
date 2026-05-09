@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import API_URL from "../constants";
 import { sendEmailOTP, verifyEmailOTP, sendPhoneOTP, verifyPhoneOTP, submitIdProof } from "../services/api";
+import { toast } from "react-hot-toast";
 
 function VerificationGate({ children }) {
     const [user, setUser] = useState(null);
@@ -46,42 +47,42 @@ function VerificationGate({ children }) {
 
     const handleSendEmailOTP = () => {
         sendEmailOTP(localStorage.getItem('token')).then(res => {
-            alert(res.data.message + (res.data.mockOTP ? ` (Mock: ${res.data.mockOTP})` : ''));
+            toast.success(res.data.message + (res.data.mockOTP ? ` (Mock: ${res.data.mockOTP})` : ''));
             setEmailOtpSent(true);
-        }).catch(() => alert("Failed to send Email OTP"));
+        }).catch(() => toast.error("Failed to send Email OTP"));
     };
 
     const handleVerifyEmailOTP = () => {
         verifyEmailOTP(emailOtpCode, localStorage.getItem('token')).then(res => {
-            alert(res.data.message);
+            toast.success(res.data.message);
             setUser(res.data.user);
             setTimeout(() => setCurrentStep(2), 300);
-        }).catch(err => alert(err.response?.data?.message || "Verification Failed"));
+        }).catch(err => toast.error(err.response?.data?.message || "Verification Failed"));
     };
 
     const handleSendPhoneOTP = () => {
         sendPhoneOTP(localStorage.getItem('token')).then(res => {
-            alert(res.data.message + (res.data.mockOTP ? ` (Mock: ${res.data.mockOTP})` : ''));
+            toast.success(res.data.message + (res.data.mockOTP ? ` (Mock: ${res.data.mockOTP})` : ''));
             setPhoneOtpSent(true);
-        }).catch(() => alert("Failed to send Phone OTP"));
+        }).catch(() => toast.error("Failed to send Phone OTP"));
     };
 
     const handleVerifyPhoneOTP = () => {
         verifyPhoneOTP(phoneOtpCode, localStorage.getItem('token')).then(res => {
-            alert(res.data.message);
+            toast.success(res.data.message);
             setUser(res.data.user);
             setTimeout(() => setCurrentStep(3), 300);
-        }).catch(err => alert(err.response?.data?.message || "Verification Failed"));
+        }).catch(err => toast.error(err.response?.data?.message || "Verification Failed"));
     };
 
     const handleSubmitId = () => {
-        if (!idProofFile) return alert("Please select an ID image first.");
+        if (!idProofFile) return toast.error("Please select an ID image first.");
         const formData = new FormData();
         formData.append('idProof', idProofFile);
         submitIdProof(formData, localStorage.getItem('token')).then(res => {
-            alert(res.data.message);
+            toast.success(res.data.message);
             setUser(res.data.user);
-        }).catch(err => alert(err.response?.data?.message || "Failed to submit ID"));
+        }).catch(err => toast.error(err.response?.data?.message || "Failed to submit ID"));
     };
 
     if (loading) return <div className="text-center mt-5">Loading Verification Data...</div>;

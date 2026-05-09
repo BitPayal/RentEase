@@ -19,7 +19,7 @@ import LikedItems from './pages/LikedItems';
 import MyRentals from './pages/MyRentals';
 import OwnerBookings from './pages/OwnerBookings';
 import AdminDashboard from './pages/AdminDashboard';
-import AdminUsers from './pages/AdminUsers';
+import ManageUsers from './pages/ManageUsers';
 import AdminItems from './pages/AdminItems';
 import AdminBookings from './pages/AdminBookings';
 import AdminVerifications from './pages/AdminVerifications';
@@ -72,8 +72,8 @@ axios.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          // Request new access token
-          const refreshRes = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+          // Request new access token using an independent axios instance
+          const refreshRes = await axios.create().post(`${API_URL}/auth/refresh`, { refreshToken });
           const newToken = refreshRes.data.token;
           
           // Store new token and update header
@@ -177,7 +177,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin/users",
-    element: (<AdminRoute><AdminUsers /></AdminRoute>),
+    element: (<AdminRoute><ManageUsers /></AdminRoute>),
   },
   {
     path: "/admin/items",

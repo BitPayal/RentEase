@@ -9,7 +9,7 @@ exports.getStats = async (req, res) => {
         const totalItems = await Item.countDocuments();
         const totalBookings = await Booking.countDocuments();
         
-        const transactions = await Transaction.find({ paymentStatus: 'Completed' });
+        const transactions = await Transaction.find({ status: 'Completed' });
         const totalRevenue = transactions.reduce((acc, t) => acc + (t.platformFee || 0), 0);
         
         res.send({ message: 'success', stats: { totalUsers, totalItems, totalBookings, totalRevenue } });
@@ -21,6 +21,7 @@ exports.getStats = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     try {
+        console.log("GET /admin/users called. User query running...");
         const users = await User.find({ $or: [{role: 'user'}, {role: {$exists: false}}] }, '-password');
         if (!users || users.length === 0) {
             return res.send({ message: 'No users found', users: [] });
@@ -38,6 +39,39 @@ exports.banUser = async (req, res) => {
         await user.save();
         res.send({ message: 'success', user });
     } catch(err) { res.status(500).send({ message: 'Server error' }); }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+        if(!user) return res.status(404).send({ message: 'User not found' });
+        
+        await User.findByIdAndDelete(id);
+        res.send({ message: 'User deleted successfully' });
+    } catch(err) { 
+        console.error("Delete user error:", err);
+        res.status(500).send({ message: 'Server error' }); 
+    }
+};
+
+exports.updateUserStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body; // active or banned
+        
+        if (!['active', 'banned'].includes(status)) {
+            return res.status(400).send({ message: 'Invalid status' });
+        }
+        
+        const user = await User.findByIdAndUpdate(id, { status }, { new: true }).select('-password');
+        if(!user) return res.status(404).send({ message: 'User not found' });
+        
+        res.send({ message: `User status updated to ${status}`, user });
+    } catch (err) { 
+        console.error("Update user status error:", err);
+        res.status(500).send({ message: 'Server error' }); 
+    }
 };
 
 exports.getPendingVerifications = async (req, res) => {
