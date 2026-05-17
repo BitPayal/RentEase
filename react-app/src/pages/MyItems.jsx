@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../constants";
 import { acceptItemPrice, rejectItemPrice } from "../services/api";
+import { toast } from 'react-hot-toast';
 
 function MyItems() {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ function MyItems() {
                     setItems(res.data.products);
                 }
             })
-            .catch(() => alert('Server Err.'));
+            .catch(() => toast.error('Server Err.'));
     }
 
     const handleDelete = (id) => {
@@ -35,29 +36,29 @@ function MyItems() {
             const token = localStorage.getItem('token');
             axios.delete(url, { headers: { Authorization: token } })
                 .then((res) => {
-                    alert('Item DELETED successfully');
+                    toast.success('Item DELETED successfully');
                     fetchMyItems();
                 })
-                .catch(() => alert('Server Err.'));
+                .catch(() => toast.error('Server Err.'));
         }
     }
 
     const handleAcceptPrice = (id) => {
         acceptItemPrice(id, localStorage.getItem('token'))
             .then(() => {
-                alert("Price accepted! Your item is now approved.");
+                toast.success("Price accepted! Your item is now approved.");
                 fetchMyItems();
             })
-            .catch(() => alert("Failed to accept price"));
+            .catch(() => toast.error("Failed to accept price"));
     };
 
     const handleRejectPrice = (id) => {
         rejectItemPrice(id, localStorage.getItem('token'))
             .then(() => {
-                alert("Price rejected. Your item is marked as rejected.");
+                toast.info("Price rejected. Your item is marked as rejected.");
                 fetchMyItems();
             })
-            .catch(() => alert("Failed to reject price"));
+            .catch(() => toast.error("Failed to reject price"));
     };
 
     return (

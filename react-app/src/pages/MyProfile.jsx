@@ -3,6 +3,22 @@ import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../constants";
+import { toast } from 'react-hot-toast';
+import { 
+  CheckCircle2, 
+  MapPin, 
+  Calendar, 
+  Settings,
+  Package, 
+  Banknote,
+  Clock,
+  Heart,
+  Star,
+  Activity,
+  PlusCircle,
+  ExternalLink,
+  ChevronRight
+} from 'lucide-react';
 
 function MyProfile() {
     const navigate = useNavigate();
@@ -48,21 +64,19 @@ function MyProfile() {
             
             axios.post(url, {}, { headers: { Authorization: token } })
                 .then((res) => {
-                    alert(res.data.message);
-                    setUser(res.data.user); // update the local state to show premium status
+                    toast.success(res.data.message);
+                    setUser(res.data.user);
                 })
-                .catch(() => alert('Upgrade failed!'));
+                .catch(() => toast.error('Upgrade failed!'));
         }
     };
 
     if (loading) {
         return (
-            <div style={{ background: 'var(--bg-color)', minHeight: '100vh' }}>
+            <div className="min-h-screen bg-slate-50">
                 <Header />
-                <div className="container mt-5 d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
-                    <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
+                <div className="flex justify-center items-center h-[50vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
                 </div>
             </div>
         );
@@ -70,154 +84,205 @@ function MyProfile() {
 
     if (error || !user) {
         return (
-            <div style={{ background: 'var(--bg-color)', minHeight: '100vh' }}>
+            <div className="min-h-screen bg-slate-50">
                 <Header />
-                <div className="container mt-5">
-                    <div className="alert alert-danger shadow-sm rounded-4 text-center p-5">
-                        <h4 className="alert-heading fw-bold mb-3">Oops!</h4>
-                        <p className="mb-0 text-muted">{error || 'Could not find your profile.'}</p>
-                        <button className="btn btn-outline-danger mt-4 rounded-pill px-4" onClick={() => navigate('/')}>Return Home</button>
+                <div className="max-w-2xl mx-auto mt-12 p-6">
+                    <div className="bg-red-50 border border-red-100 rounded-2xl p-8 text-center shadow-sm">
+                        <h4 className="text-xl font-bold text-red-700 mb-2">Oops!</h4>
+                        <p className="text-red-600 mb-6">{error || 'Could not find your profile.'}</p>
+                        <button 
+                            className="px-6 py-2.5 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-colors"
+                            onClick={() => navigate('/')}
+                        >
+                            Return Home
+                        </button>
                     </div>
                 </div>
             </div>
         );
     }
 
+    const memberSince = new Date(user.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
     return (
-        <div>
+        <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
             <Header />
-            <div className="container mt-5">
-                <div className="row g-4 mb-5">
-                    {/* Profile Information Section */}
-                    <div className="col-md-4">
-                        <div className="card shadow-lg p-4 text-center" style={{ borderRadius: 'var(--radius-xl)', border: 'none', background: 'linear-gradient(to bottom, #ffffff, #f8fafc)' }}>
-                            <div className="mx-auto mb-3 d-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #0ea5e9)', color: 'white', fontSize: '32px', fontWeight: 'bold', boxShadow: 'var(--shadow-md)' }}>
-                                {user.username.charAt(0).toUpperCase()}
+            
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    {/* Left Sidebar - Profile Card */}
+                    <div className="lg:col-span-3 space-y-6">
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col items-center text-center">
+                            <div className="relative mb-4">
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-3xl font-bold shadow-md">
+                                    {user.username.charAt(0).toUpperCase()}
+                                </div>
+                                {user.isPremium && (
+                                    <div className="absolute -bottom-2 -right-2 bg-amber-400 text-amber-900 p-1.5 rounded-full shadow-sm ring-2 ring-white">
+                                        <Star size={16} fill="currentColor" />
+                                    </div>
+                                )}
                             </div>
-                            <h3 style={{ fontWeight: 800 }}>{user.username}</h3>
-                            <p className="text-muted mb-4">{user.email} <br/> {user.phone}</p>
                             
-                            {user.isPremium ? (
-                                <div className="badge p-3 w-100 mb-3" style={{ background: 'linear-gradient(135deg, #fef08a, #facc15)', color: '#854d0e', borderRadius: '12px', fontSize: '15px', fontWeight: 'bold' }}>⭐ Premium Member</div>
-                            ) : (
-                                <div className="badge bg-secondary p-2 mb-4 w-100" style={{ borderRadius: '10px' }}>Standard Member</div>
-                            )}
+                            <h2 className="text-xl font-bold text-slate-900">{user.username}</h2>
+                            <p className="text-slate-500 text-sm mb-4">{user.email}</p>
+                            
+                            <div className="flex items-center gap-2 mb-6">
+                                {user.isVerified ? (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                                        <CheckCircle2 size={14} /> Verified Account
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                                        Unverified
+                                    </span>
+                                )}
+                            </div>
+                            
+                            <div className="w-full space-y-3 mb-6 text-left">
+                                <div className="flex items-center text-sm text-slate-600">
+                                    <Calendar className="w-4 h-4 mr-3 text-slate-400" />
+                                    Joined {memberSince}
+                                </div>
+                                {user.phone && (
+                                    <div className="flex items-center text-sm text-slate-600">
+                                        <Settings className="w-4 h-4 mr-3 text-slate-400" />
+                                        {user.phone}
+                                    </div>
+                                )}
+                            </div>
+
+                            <button className="w-full py-2.5 px-4 bg-white border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors shadow-sm mb-3">
+                                Edit Profile
+                            </button>
 
                             {!user.isPremium && (
-                                <button className="btn w-100 fw-bold shadow-sm" style={{ background: 'linear-gradient(135deg, #10b981, #0ea5e9)', color: 'white', borderRadius: '10px', padding: '12px' }} onClick={handleUpgrade}>
+                                <button 
+                                    onClick={handleUpgrade}
+                                    className="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-teal-600 transition-all shadow-sm"
+                                >
                                     Upgrade to Premium ⭐
                                 </button>
                             )}
                         </div>
+
+                        {/* Quick Stats side card */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                            <h3 className="font-semibold text-slate-900 mb-4 text-sm uppercase tracking-wider">Quick Summary</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-600 text-sm">Total Listings</span>
+                                    <span className="font-semibold text-slate-900">0</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-600 text-sm">Active Rentals</span>
+                                    <span className="font-semibold text-slate-900">{(metrics.rentalsCount !== undefined ? metrics.rentalsCount : (user.bookingsCount || 0))}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-600 text-sm">Wishlist Items</span>
+                                    <span className="font-semibold text-slate-900">0</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Earnings Dashboard */}
-                    <div className="col-md-8">
-                        <div className="card shadow-lg p-5" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-xl)' }}>
-                            <div className="d-flex align-items-center mb-4">
-                                <span style={{ fontSize: '32px', marginRight: '15px' }}>💰</span>
-                                <div>
-                                    <h2 className="text-success fw-bold mb-0">Earnings Dashboard</h2>
-                                    <p className="text-muted mb-0">Track your revenue from rented items.</p>
-                                </div>
-                            </div>
-                            
-                            <div className="row mt-3 text-center g-3">
-                                <div className="col-md-4">
-                                    <div className="p-4 rounded h-100" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                                        <h2 className="text-success fw-bold">₹ {user.totalEarnings || 0}</h2>
-                                        <h6 className="fw-bold text-success mt-2">Total Earnings</h6>
+                    {/* Main Content Area */}
+                    <div className="lg:col-span-9 space-y-8">
+                        
+                        {/* Stats Grid */}
+                        <section>
+                            <h3 className="text-lg font-bold text-slate-900 mb-4">Dashboard</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group cursor-default">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                                            <Banknote size={20} />
+                                        </div>
+                                        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Revenue</span>
                                     </div>
+                                    <h4 className="text-2xl font-bold text-slate-900 mb-1">₹{user.totalEarnings || 0}</h4>
+                                    <p className="text-sm text-emerald-600 font-medium">+₹{user.pendingEarnings || 0} pending</p>
                                 </div>
-                                <div className="col-md-4">
-                                    <div className="p-4 rounded h-100" style={{ background: '#fffbeb', border: '1px solid #fde68a' }}>
-                                        <h2 className="text-warning fw-bold">₹ {user.pendingEarnings || 0}</h2>
-                                        <h6 className="fw-bold text-warning mt-2">Pending Balance</h6>
-                                    </div>
-                                </div>
-                                <div className="col-md-4">
-                                    <div className="p-4 rounded h-100" style={{ background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-                                        <h2 className="text-primary fw-bold">₹ {user.completedPayouts || 0}</h2>
-                                        <h6 className="fw-bold text-primary mt-2">Completed Payouts</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="row mt-4 mb-2 text-center g-3">
-                                <div className="col-md-6 offset-md-3">
-                                    <div className="p-4 rounded" style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                                        <h2 className="text-dark fw-bold">{metrics.rentalsCount !== undefined ? metrics.rentalsCount : (user.bookingsCount || 0)}</h2>
-                                        <h6 className="fw-bold text-dark mt-2">Total Items Rented Out</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="alert mt-4 text-center border-0" style={{ background: 'var(--text-main)', color: 'white', borderRadius: '12px' }}>
-                                🌱 Your items are making a difference! Keep listing to earn more.
-                            </div>
-                        </div>
 
-                        {/* Setup KYC / Payouts Section */}
-                        <div className="card shadow-lg p-5 mt-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-xl)' }}>
-                            <div className="d-flex align-items-center mb-4">
-                                <span style={{ fontSize: '32px', marginRight: '15px' }}>🏦</span>
-                                <div>
-                                    <h2 className="text-dark fw-bold mb-0">Payout Details (KYC)</h2>
-                                    <p className="text-muted mb-0">Securely link your bank account to receive rental earnings.</p>
+                                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group cursor-default">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                                            <Package size={20} />
+                                        </div>
+                                        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Items</span>
+                                    </div>
+                                    <h4 className="text-2xl font-bold text-slate-900 mb-1">{(metrics.rentalsCount !== undefined ? metrics.rentalsCount : (user.bookingsCount || 0))}</h4>
+                                    <p className="text-sm text-slate-500">Items currently rented out</p>
+                                </div>
+
+                                <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group cursor-default">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                                            <Star size={20} />
+                                        </div>
+                                        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Reviews</span>
+                                    </div>
+                                    <h4 className="text-2xl font-bold text-slate-900 mb-1">0.0</h4>
+                                    <p className="text-sm text-slate-500">Average rating</p>
                                 </div>
                             </div>
+                        </section>
 
-                            {user.bankDetailsAdded ? (
-                                <div className="p-4 rounded text-center" style={{ background: '#dcfce7', border: '1px solid #86efac' }}>
-                                    <div className="mb-2" style={{ fontSize: '40px' }}>✅</div>
-                                    <h5 className="fw-bold text-success mb-1">Bank Account Linked Securely</h5>
-                                    <p className="text-success mb-0">Razorpay Connected Account ID: <span className="fw-bold">{user.razorpayAccountId}</span></p>
-                                    <small className="text-muted d-block mt-2">Your payments will automatically be deposited here.</small>
-                                </div>
-                            ) : (
-                                <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const accountName = e.target.accountName.value;
-                                    const accountNumber = e.target.accountNumber.value;
-                                    const ifsc = e.target.ifsc.value;
-                                    
-                                    const confirm = window.confirm('Link this bank account to Razorpay Route for payouts?');
-                                    if(confirm) {
-                                        const url = API_URL + "/auth/bank-details";
-                                        const token = localStorage.getItem('token');
-                                        axios.post(url, { accountName, accountNumber, ifsc }, { headers: { Authorization: token } })
-                                            .then(res => {
-                                                alert(res.data.message);
-                                                setUser(res.data.user);
-                                            })
-                                            .catch(err => alert(err.response?.data?.message || 'Failed to link account'));
-                                    }
-                                }}>
-                                    <div className="alert alert-warning mb-4 fw-bold shadow-sm" style={{ borderRadius: '10px' }}>
-                                        ⚠️ To withdraw earnings from rentals, you must add your payout account details.
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="form-label fw-bold text-muted mb-2">Account Holder Name</label>
-                                        <input name="accountName" type="text" className="form-control form-control-lg bg-light border-0" style={{ borderRadius: '10px' }} required placeholder="e.g., John Doe" />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="form-label fw-bold text-muted mb-2">Account Number</label>
-                                        <input name="accountNumber" type="password" className="form-control form-control-lg bg-light border-0" style={{ borderRadius: '10px' }} required placeholder="••••••••••••" />
-                                        <small className="text-muted d-block mt-2">🔒 We encrypt and send this directly to Razorpay. We never store raw account numbers.</small>
-                                    </div>
-                                    <div className="mb-5">
-                                        <label className="form-label fw-bold text-muted mb-2">IFSC Code</label>
-                                        <input name="ifsc" type="text" className="form-control form-control-lg bg-light border-0" style={{ borderRadius: '10px' }} required placeholder="e.g., HDFC0001234" />
-                                    </div>
-                                    <button type="submit" className="btn w-100 fw-bold py-3 text-white shadow" style={{ borderRadius: '12px', background: 'linear-gradient(135deg, #1e293b, #0f172a)' }}>
-                                        Securely Link Bank Account 🔐
+                        {/* Two Column Layout for Activity and Listings */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            
+                            {/* My Listings */}
+                            <section>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-bold text-slate-900">My Listings</h3>
+                                    <button className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                                        View All <ChevronRight size={16} />
                                     </button>
-                                </form>
-                            )}
+                                </div>
+                                <div className="bg-white border border-slate-100 rounded-2xl p-8 text-center shadow-sm">
+                                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                                        <Package size={32} />
+                                    </div>
+                                    <h4 className="text-slate-900 font-semibold mb-2">No items listed yet</h4>
+                                    <p className="text-slate-500 text-sm mb-6">Start renting and earn from your unused products.</p>
+                                    <button onClick={() => navigate('/add-product')} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-medium rounded-xl hover:bg-slate-800 transition-colors">
+                                        <PlusCircle size={18} /> List New Item
+                                    </button>
+                                </div>
+                            </section>
+
+                            {/* Recent Activity */}
+                            <section>
+                                <h3 className="text-lg font-bold text-slate-900 mb-4">Recent Activity</h3>
+                                <div className="bg-white border border-slate-100 rounded-2xl p-2 shadow-sm">
+                                    <div className="p-6 text-center">
+                                        <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+                                            <Activity size={24} />
+                                        </div>
+                                        <p className="text-slate-500 text-sm">No recent activity to show.</p>
+                                        <button className="mt-4 text-sm font-medium text-emerald-600 hover:text-emerald-700" onClick={() => navigate('/')}>
+                                            Browse Rentals
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+
                         </div>
+
+                        {/* Wishlist / Saved Items */}
+                        <section>
+                            <h3 className="text-lg font-bold text-slate-900 mb-4">Saved Items</h3>
+                            <div className="bg-white border border-slate-100 rounded-2xl p-8 text-center shadow-sm flex flex-col items-center">
+                                <Heart className="text-slate-300 w-12 h-12 mb-3" />
+                                <h4 className="text-slate-900 font-semibold mb-1">Your wishlist is empty</h4>
+                                <p className="text-slate-500 text-sm mb-0">Save items you like to view them later.</p>
+                            </div>
+                        </section>
+                        
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

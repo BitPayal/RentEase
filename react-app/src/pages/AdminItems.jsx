@@ -30,13 +30,13 @@ function AdminItems() {
     const fetchPendingItems = () => {
         getAdminPendingItems(localStorage.getItem('token'))
             .then(res => setItems(res.data.items))
-            .catch(err => alert("Failed to fetch pending items"));
+            .catch(err => toast.error("Failed to fetch pending items"));
     };
 
     const handleStatus = (id, status) => {
         updateAdminItemStatus(id, status, localStorage.getItem('token'))
             .then(() => fetchPendingItems())
-            .catch(err => alert("Failed to update item status"));
+            .catch(err => toast.error("Failed to update item status"));
     };
 
     const handleEditClick = (item) => {
@@ -64,13 +64,13 @@ function AdminItems() {
 
         updateAdminItem(editItemData.id, formData, localStorage.getItem('token'))
             .then(() => {
-                alert("Item updated successfully");
+                toast.success("Item updated successfully");
                 setShowEditModal(false);
                 fetchPendingItems();
             })
             .catch(err => {
                 console.error("Update error:", err);
-                alert("Failed to update item: " + (err.response?.data?.message || err.message));
+                toast.error("Failed to update item: " + (err.response?.data?.message || err.message));
             });
     };
 

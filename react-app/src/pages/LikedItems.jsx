@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../constants";
 import { FaHeart } from "react-icons/fa";
+import { toast } from 'react-hot-toast';
 
 function LikedItems() {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ function LikedItems() {
                     setItems(res.data.products);
                 }
             })
-            .catch((err) => alert('Server Err: ' + (err.response?.data?.message || err.message)));
+            .catch((err) => toast.error('Server Err: ' + (err.response?.data?.message || err.message)));
     }
 
     const handleItem = (id) => {

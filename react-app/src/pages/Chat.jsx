@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
 import API_URL from "../constants";
+import { toast } from 'react-hot-toast';
 
 function Chat() {
     const { productId, receiverId } = useParams();
@@ -43,7 +44,7 @@ function Chat() {
                 setText('');
                 fetchMessages();
             })
-            .catch(() => alert('Failed to send message.'));
+            .catch(() => toast.error('Failed to send message.'));
     };
 
     const myUserId = localStorage.getItem('userId');

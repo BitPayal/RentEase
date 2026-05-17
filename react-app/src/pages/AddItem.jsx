@@ -6,6 +6,7 @@ import categories from '../components/CategoriesList';
 import { locations } from '../utils/locations';
 import API_URL from "../constants";
 import VerificationGate from "../components/VerificationGate";
+import { toast } from 'react-hot-toast';
 
 function AddItem() {
 
@@ -26,7 +27,7 @@ function AddItem() {
 
     const handleApi = () => {
         if (!title || !description || !price || !deposit || !category || !loc || !image) {
-            alert('Please fill all the required fields including the image.');
+            toast.error('Please fill all the required fields including the image.');
             return;
         }
 
@@ -44,14 +45,14 @@ function AddItem() {
         axios.post(url, formData, { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => {
                 if (res.data.message) {
-                    alert(res.data.message); 
+                    toast.info(res.data.message); 
                     navigate('/')
                 }
             })
         .catch((err) => {
             console.log(err.response?.data || err.message);
             const errorMsg = err.response?.data?.message || 'Server Err';
-            alert(errorMsg);
+            toast.error(errorMsg);
         })
     }
 

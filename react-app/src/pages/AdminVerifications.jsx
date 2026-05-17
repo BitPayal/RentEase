@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { getAdminPendingVerifications, updateVerificationStatus } from "../services/api";
 import API_URL from "../constants";
+import { toast } from 'react-hot-toast';
 
 function AdminVerifications() {
     const [users, setUsers] = useState([]);
@@ -13,7 +14,7 @@ function AdminVerifications() {
     const fetchPendingVerifications = () => {
         getAdminPendingVerifications(localStorage.getItem('token'))
             .then(res => setUsers(res.data.users))
-            .catch(err => alert("Failed to fetch verifications"));
+            .catch(err => toast.error("Failed to fetch verifications"));
     };
 
     const handleStatus = (userId, status) => {
@@ -22,10 +23,10 @@ function AdminVerifications() {
 
         updateVerificationStatus(userId, status, localStorage.getItem('token'))
             .then(() => {
-                alert(`User ${status} successfully`);
+                toast.success(`User ${status} successfully`);
                 fetchPendingVerifications();
             })
-            .catch(err => alert("Failed to update status"));
+            .catch(err => toast.error("Failed to update status"));
     };
 
     return (

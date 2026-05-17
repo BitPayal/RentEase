@@ -9,7 +9,12 @@ const authMiddleware = (req, res, next) => {
     }
     
     jwt.verify(token, 'MYKEY', (err, decoded) => {
-        if (err) return res.status(403).send({ message: 'Failed to authenticate token.' });
+        if (err) {
+            if (err.name === 'TokenExpiredError') {
+                return res.status(401).send({ message: 'Session expired. Please log in again.' });
+            }
+            return res.status(403).send({ message: 'Failed to authenticate token.' });
+        }
         req.user = decoded.data;
         next();
     });

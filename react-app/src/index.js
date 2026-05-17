@@ -29,7 +29,7 @@ import BookingSuccess from './pages/BookingSuccess';
 import axios from 'axios';
 
 import API_URL from './constants';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -95,8 +95,8 @@ axios.interceptors.response.use(
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('userId');
           localStorage.removeItem('username');
-          alert('Your session has expired. Please log in again.');
-          window.location.href = '/login';
+          toast.error('Session expired. Please login again.');
+          setTimeout(() => { window.location.href = '/login'; }, 1500);
           return Promise.reject(refreshErr);
         }
       } else {
@@ -107,8 +107,8 @@ axios.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
-        alert('Your session has expired. Please log in again.');
-        window.location.href = '/login';
+        toast.error('Session expired. Please login again.');
+        setTimeout(() => { window.location.href = '/login'; }, 1500);
       }
     }
     return Promise.reject(err);

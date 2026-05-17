@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { getAdminBookings, cancelAdminBooking, releaseAdminEscrow, refundAdminEscrow } from "../services/api";
+import { toast } from 'react-hot-toast';
 
 function AdminBookings() {
     const [bookings, setBookings] = useState([]);
@@ -18,34 +19,34 @@ function AdminBookings() {
     const fetchBookings = () => {
         getAdminBookings(localStorage.getItem('token'))
             .then(res => setBookings(res.data.bookings))
-            .catch(err => alert("Failed to fetch bookings"));
+            .catch(err => toast.error("Failed to fetch bookings"));
     };
 
     const handleCancel = (id) => {
         if (!window.confirm('Are you sure you want to cancel this booking?')) return;
         cancelAdminBooking(id, localStorage.getItem('token'))
             .then(() => fetchBookings())
-            .catch(err => alert("Failed to cancel booking"));
+            .catch(err => toast.error("Failed to cancel booking"));
     };
 
     const handleRelease = (id) => {
         if (!window.confirm('Release funds to owner? This will transfer earnings and refund the deposit.')) return;
         releaseAdminEscrow(id, localStorage.getItem('token'))
             .then(res => {
-                alert(res.data.message);
+                toast.info(res.data.message);
                 fetchBookings();
             })
-            .catch(err => alert(err.response?.data?.message || "Failed to release funds"));
+            .catch(err => toast.error(err.response?.data?.message || "Failed to release funds"));
     };
 
     const handleRefund = (id) => {
         if (!window.confirm('WARNING: Full refund to renter? The owner will receive nothing.')) return;
         refundAdminEscrow(id, localStorage.getItem('token'))
             .then(res => {
-                alert(res.data.message);
+                toast.info(res.data.message);
                 fetchBookings();
             })
-            .catch(err => alert(err.response?.data?.message || "Failed to refund deposit"));
+            .catch(err => toast.error(err.response?.data?.message || "Failed to refund deposit"));
     };
 
     return (

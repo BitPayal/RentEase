@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import { getOwnerBookings } from "../services/api";
 import API_URL from "../constants";
+import { toast } from 'react-hot-toast';
 
 function OwnerBookings() {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ function OwnerBookings() {
                     setBookings(res.data.bookings);
                 }
             })
-            .catch((err) => alert('Server Err: ' + (err.response?.data?.message || err.message)))
+            .catch((err) => toast.error('Server Err: ' + (err.response?.data?.message || err.message)))
             .finally(() => setLoading(false));
     }
 

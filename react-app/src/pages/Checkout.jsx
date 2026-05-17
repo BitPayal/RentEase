@@ -54,7 +54,7 @@ function Checkout() {
     const handleProceedToPayment = async (skipVerification = false) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            alert('Please login first to book an item.');
+            toast.error('Please login first to book an item.');
             navigate('/login');
             return;
         }

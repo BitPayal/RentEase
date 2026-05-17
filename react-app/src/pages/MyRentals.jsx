@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../constants";
+import { toast } from 'react-hot-toast';
 
 function MyRentals() {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ function MyRentals() {
                     setRentals(res.data.rentals);
                 }
             })
-            .catch((err) => alert('Server Err: ' + (err.response?.data?.message || err.message)))
+            .catch((err) => toast.error('Server Err: ' + (err.response?.data?.message || err.message)))
             .finally(() => setLoading(false));
     }
 

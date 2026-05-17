@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
 import API_URL from "../constants";
+import { toast } from 'react-hot-toast';
 
 
 
@@ -38,7 +39,7 @@ function ItemDetail() {
 
     const handleBooking = () => {
         if (!startDate || !endDate) {
-            alert('Please select start and end dates.');
+            toast.error('Please select start and end dates.');
             return;
         }
 
@@ -47,7 +48,7 @@ function ItemDetail() {
         const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
         
         if (diffDays <= 0) {
-            alert('End date must be after start date!');
+            toast.error('End date must be after start date!');
             return;
         }
 

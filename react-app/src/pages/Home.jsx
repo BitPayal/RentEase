@@ -6,6 +6,7 @@ import Categories from "../components/Categories";
 import { FaHeart } from "react-icons/fa";
 import '../components/Home.css';
 import API_URL from "../constants";
+import { toast } from 'react-hot-toast';
 
 
 function Home() {
@@ -36,7 +37,7 @@ function Home() {
                 }
             })
             .catch((err) => {
-                alert('Server Err.')
+                toast.error('Server Err.')
             })
     }
 
@@ -82,7 +83,7 @@ function Home() {
         let userId = localStorage.getItem('userId');
 
         if (!userId) {
-            alert('Please Login first.')
+            toast.error('Please Login first.')
             return;
         }
 
@@ -91,11 +92,11 @@ function Home() {
         axios.post(url, data)
             .then((res) => {
                 if (res.data.message) {
-                    alert(res.data.message)
+                    toast.info(res.data.message)
                 }
             })
             .catch((err) => {
-                alert('Server Err.')
+                toast.error('Server Err.')
             })
 
     }
