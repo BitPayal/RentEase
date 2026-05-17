@@ -274,7 +274,7 @@ function VerificationGate({ children }) {
         );
     };
 
-    if (user?.verificationStatus === 'pending') return renderPendingState();
+    if (user?.verificationStatus === 'pending_admin_approval') return renderPendingState();
     if (user?.verificationStatus !== 'approved') return renderVerificationFlow();
     
     return <>{children}</>;

@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import API_URL from "../constants";
 import { demoPaymentOrder } from "../services/api";
 import VerificationGate from "../components/VerificationGate";
+import { toast } from "react-hot-toast";
 
 function Checkout() {
     const location = useLocation();
@@ -50,7 +51,7 @@ function Checkout() {
         return new Date(dateString).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' });
     };
 
-    const handleProceedToPayment = async () => {
+    const handleProceedToPayment = async (skipVerification = false) => {
         const token = localStorage.getItem('token');
         if (!token) {
             alert('Please login first to book an item.');
@@ -58,7 +59,7 @@ function Checkout() {
             return;
         }
 
-        if (liveUser && liveUser.verificationStatus !== 'verified') {
+        if (!skipVerification && liveUser && liveUser.verificationStatus !== 'approved') {
              // Failsafe in case button is somehow clicked
              setShowVerificationModal(true);
              return;
@@ -70,6 +71,8 @@ function Checkout() {
     const triggerPayment = (token) => {
         setIsBooking(true);
         setPaymentError(null);
+        toast.loading("Initiating secure payment...", { id: "payment" });
+        console.log("Triggering payment for item:", item._id, "Total:", totalPrice);
         
         const url = API_URL + "/book";
         const data = {
@@ -85,23 +88,33 @@ function Checkout() {
             .then(async (res) => {
                 try {
                     const booking = res.data.booking;
+                    console.log("Booking created successfully, booking ID:", booking._id);
                     
                     // SIMULATE PAYMENT
+                    toast.loading("Processing payment with gateway...", { id: "payment" });
                     await demoPaymentOrder({ bookingId: booking._id }, token);
                     
-                    // Redirect directly to Success Page
-                    navigate('/booking-success', { state: { booking, item } });
+                    console.log("Payment successful, redirecting to success page");
+                    toast.success("Payment successful! Redirecting...", { id: "payment" });
+                    
+                    // Directly navigate to Success Page with some delay to show toast
+                    setTimeout(() => {
+                        navigate('/booking-success', { state: { booking, item } });
+                    }, 1000);
 
                 } catch (error) {
                     console.error("Payment failed", error);
                     const backendMsg = error.response?.data?.error || error.response?.data?.message || error.message;
                     setPaymentError("Payment failed: " + backendMsg);
+                    toast.error("Payment failed: " + backendMsg, { id: "payment" });
                     setIsBooking(false);
                 }
             })
             .catch((err) => {
-                console.error("Booking error: ", err);
-                setPaymentError('Booking failed! ' + (err.response?.data?.message || 'Please try again.'));
+                console.error("Booking creation error: ", err);
+                const errorMsg = 'Booking failed! ' + (err.response?.data?.message || 'Please try again.');
+                setPaymentError(errorMsg);
+                toast.error(errorMsg, { id: "payment" });
                 setIsBooking(false);
             });
     };
@@ -127,7 +140,7 @@ function Checkout() {
                                         <div className="mt-4">
                                             <button className="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow" onClick={() => {
                                                 setShowVerificationModal(false);
-                                                handleProceedToPayment();
+                                                handleProceedToPayment(true);
                                             }}>
                                                 Continue to Payment →
                                             </button>
@@ -230,12 +243,12 @@ function Checkout() {
 
                                 {checkingProfile ? (
                                     <div className="text-center p-3 text-muted">Checking account status...</div>
-                                ) : liveUser?.verificationStatus === 'pending' ? (
+                                ) : liveUser?.verificationStatus === 'pending_admin_approval' ? (
                                     <div className="alert alert-info py-3 px-3 border-0 rounded-3 shadow-sm mb-0">
                                         <h6 className="fw-bold mb-1">⏳ Verification Pending</h6>
                                         <p className="mb-0 small">Your identity verification has been submitted and is waiting for admin approval.</p>
                                     </div>
-                                ) : liveUser?.verificationStatus !== 'verified' ? (
+                                ) : liveUser?.verificationStatus !== 'approved' ? (
                                     <div className="alert alert-warning py-3 px-3 border-0 rounded-3 shadow-sm mb-0">
                                         <h6 className="fw-bold mb-1">⚠️ Verification Required</h6>
                                         <p className="mb-3 small">Complete identity verification to proceed with booking securely.</p>

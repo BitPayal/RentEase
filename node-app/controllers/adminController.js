@@ -76,7 +76,7 @@ exports.updateUserStatus = async (req, res) => {
 
 exports.getPendingVerifications = async (req, res) => {
     try {
-        const users = await User.find({ verificationStatus: 'pending' }).select('-password');
+        const users = await User.find({ verificationStatus: 'pending_admin_approval' }).select('-password');
         res.send({ message: 'success', users });
     } catch (err) { res.status(500).send({ message: 'Server error' }); }
 };

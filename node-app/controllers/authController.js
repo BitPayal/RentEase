@@ -214,7 +214,7 @@ exports.submitIdProof = async (req, res) => {
         if (req.file) {
             user.idProofImage = req.file.path.replace(/\\/g, "/");
             user.govIdUploaded = true;
-            user.verificationStatus = 'pending';
+            user.verificationStatus = 'pending_admin_approval';
             await user.save();
             res.send({ message: 'Verification submitted successfully. Waiting for Admin approval.', user });
         } else {

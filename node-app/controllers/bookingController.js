@@ -12,7 +12,7 @@ exports.bookItem = async (req, res) => {
         if (!item) return res.status(404).send({ message: 'Item not found' });
 
         const dbUser = await require('../models/User').findById(req.user._id);
-        if (dbUser.verificationStatus !== 'verified') {
+        if (dbUser.verificationStatus !== 'approved') {
             return res.status(403).send({ message: 'User verification is required to book items. Please complete verification and wait for admin approval.' });
         }
 

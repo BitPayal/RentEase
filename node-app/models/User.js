@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     isPremium: { type: Boolean, default: false },
     razorpayAccountId: { type: String }, // For Razorpay Route Escrow payouts
     bankDetailsAdded: { type: Boolean, default: false },
-    verificationStatus: { type: String, enum: ['unverified', 'pending', 'approved', 'rejected'], default: 'unverified' },
+    verificationStatus: { type: String, enum: ['unverified', 'pending_admin_approval', 'approved', 'rejected'], default: 'unverified' },
     isVerified: { type: Boolean, default: false },
     govIdUploaded: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false },
