@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -15,10 +16,11 @@ const adminRoutes = require('./routes/adminRoutes');
 const authMiddleware = require('./middleware/auth');
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 // Connect to DB
-mongoose.connect('mongodb://127.0.0.1:27017/test')
+const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/test';
+mongoose.connect(mongoURI)
     .then(() => console.log('DB Connected'))
     .catch(err => console.log(err));
 
