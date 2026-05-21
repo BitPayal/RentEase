@@ -16,6 +16,7 @@ function MyItems() {
             return;
         }
         fetchMyItems();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchMyItems = () => {

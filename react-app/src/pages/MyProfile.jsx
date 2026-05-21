@@ -6,17 +6,14 @@ import API_URL from "../constants";
 import { toast } from 'react-hot-toast';
 import { 
   CheckCircle2, 
-  MapPin, 
   Calendar, 
   Settings,
   Package, 
   Banknote,
-  Clock,
   Heart,
   Star,
   Activity,
   PlusCircle,
-  ExternalLink,
   ChevronRight
 } from 'lucide-react';
 

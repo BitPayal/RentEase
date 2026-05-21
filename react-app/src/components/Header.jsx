@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Header.css'
 import { FaSearch } from "react-icons/fa";
 import { FiUser, FiPlus, FiBox, FiLogOut } from "react-icons/fi";
@@ -12,7 +12,7 @@ function Header(props) {
     const [loc, setLoc] = useState(localStorage.getItem('userLoc') || '')
     const [showOver, setshowOver] = useState(false)
 
-    const navigate = useNavigate()
+
 
     const handleLogout = () => {
         logout();

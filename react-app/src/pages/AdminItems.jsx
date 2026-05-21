@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { getAdminPendingItems, updateAdminItemStatus, suggestAdminItemPrice, updateAdminItem } from "../services/api";
 import API_URL from "../constants";

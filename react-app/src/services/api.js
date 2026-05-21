@@ -1,8 +1,9 @@
 import axios from "axios";
+import API_URL from "../constants";
 
 // Base API URL config
 const API = axios.create({
-  baseURL: "http://localhost:4000/api"
+  baseURL: API_URL
 });
 
 // Response Interceptor for Token Refresh
@@ -18,7 +19,7 @@ API.interceptors.response.use(
       if (refreshToken) {
         try {
           // Attempt token refresh without triggering interceptors recursively
-          const res = await axios.create().post('http://localhost:4000/api/auth/refresh', { refreshToken });
+          const res = await axios.create().post(`${API_URL}/auth/refresh`, { refreshToken });
           if (res.data && res.data.token) {
             localStorage.setItem('token', res.data.token);
             window.dispatchEvent(new Event('storage'));

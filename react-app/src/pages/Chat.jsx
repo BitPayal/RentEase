@@ -27,6 +27,7 @@ function Chat() {
         // Simple HTTP Polling simulation for Real-Time MVP Chat
         const interval = setInterval(fetchMessages, 3000);
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productId, receiverId]);
 
     const fetchMessages = () => {

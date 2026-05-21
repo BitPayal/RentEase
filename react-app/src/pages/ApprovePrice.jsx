@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import Header from "../components/Header";
 import { getPriceActionItem, handlePriceAction } from "../services/api";
 import toast from "react-hot-toast";
@@ -11,7 +11,7 @@ function ApprovePrice() {
     const [actionCompleted, setActionCompleted] = useState(false);
     
     const location = useLocation();
-    const navigate = useNavigate();
+
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get('token');
 
