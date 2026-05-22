@@ -9,7 +9,7 @@ exports.signup = async (req, res) => {
     try {
         const { username, password, email, phone } = req.body;
         const existingUser = await User.findOne({ username });
-        if (existingUser) return res.send({ message: 'User already exists.' });
+        if (existingUser) return res.status(400).send({ message: 'User already exists.' });
         
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -23,9 +23,10 @@ exports.signup = async (req, res) => {
             verificationStatus: 'unverified'
         });
         await user.save();
-        res.send({ message: 'saved success.' });
+        res.status(201).send({ message: 'saved success.' });
     } catch (err) {
-        res.send({ message: 'server err' });
+        console.error('Signup Error:', err);
+        res.status(500).send({ message: 'server err' });
     }
 };
 
@@ -33,14 +34,15 @@ exports.login = async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
-        if (!user) return res.send({ message: "user not found" });
+        if (!user) return res.status(404).send({ message: "user not found" });
 
         let isMatch = false;
-        if (user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$'))) {
-            isMatch = await bcrypt.compare(password, user.password);
+        const dbPassword = user.password ? String(user.password) : '';
+        if (dbPassword.startsWith('$2a$') || dbPassword.startsWith('$2b$')) {
+            isMatch = await bcrypt.compare(password, dbPassword);
         } else {
             // Legacy plaintext fallback for existing users like Doremon
-            isMatch = (password === user.password);
+            isMatch = (password === dbPassword);
             
             // Auto-migrate legacy passwords to bcrypt hash!
             if (isMatch) {
@@ -55,10 +57,11 @@ exports.login = async (req, res) => {
             const refreshToken = jwt.sign({ data: user }, 'MY_REFRESH_KEY', { expiresIn: '7d' });
             res.send({ message: 'find success.', token, refreshToken, user });
         } else {
-            res.send({ message: 'password wrong.' });
+            res.status(401).send({ message: 'password wrong.' });
         }
     } catch (err) {
-        res.send({ message: 'server err' });
+        console.error('Login Error:', err);
+        res.status(500).send({ message: 'Database connection failed or server error.' });
     }
 };
 

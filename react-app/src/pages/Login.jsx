@@ -14,6 +14,11 @@ function Login() {
     const [password, setpassword] = useState('');
 
     const handleApi = () => {
+        if (!API_URL || API_URL === 'undefined') {
+            toast.error('Backend API URL is not configured.');
+            return;
+        }
+
         const url = API_URL + "/auth/login";
         const data = { username, password };
         const loadToast = toast.loading('Logging in...');
@@ -29,7 +34,13 @@ function Login() {
                 }
             })
             .catch((err) => {
-                toast.error(err.response?.data?.message || 'Server Error', { id: loadToast });
+                let errMsg = 'Server Error';
+                if (err.response && err.response.data && err.response.data.message) {
+                    errMsg = err.response.data.message;
+                } else if (err.message) {
+                    errMsg = err.message;
+                }
+                toast.error(errMsg, { id: loadToast });
             })
     }
 
